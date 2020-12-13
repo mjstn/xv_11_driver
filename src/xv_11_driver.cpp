@@ -1,24 +1,48 @@
-// Copyright 2016 Open Source Robotics Foundation, Inc.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//     http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-//
-// This xv-11 lidar driver started from this link:
-// https://github.com/ros2/demos/blob/master/dummy_robot/dummy_sensors/src/dummy_laser.cpp
-// And xv11 code:  https://github.com/rohbotics/xv_11_laser_driver
-// Also refer to conversion from ROS to ROS2  at https://index.ros.org/doc/ros2/Contributing/Migration-Guide/
-//
-// Launch:  ros2 run xv_11_driver xv_11_driver
-//
+/*********************************************************************
+ * Software License Agreement (BSD License)
+ *
+ *  Copyright (c) 2011, Eric Perko, Chad Rockey
+ *  All rights reserved.
+ *
+ *  Redistribution and use in source and binary forms, with or without
+ *  modification, are permitted provided that the following conditions
+ *  are met:
+ *
+ *   * Redistributions of source code must retain the above copyright
+ *     notice, this list of conditions and the following disclaimer.
+ *   * Redistributions in binary form must reproduce the above
+ *     copyright notice, this list of conditions and the following
+ *     disclaimer in the documentation and/or other materials provided
+ *     with the distribution.
+ *   * Neither the name of Case Western Reserve University nor the names of its
+ *     contributors may be used to endorse or promote products derived
+ *     from this software without specific prior written permission.
+ *
+ *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ *  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ *  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
+ *  FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ *  COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ *  INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+ *  BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ *  LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+ *  CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+ *  LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
+ *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ *  POSSIBILITY OF SUCH DAMAGE.
+ *********************************************************************/
+
+
+/*********************************************************************
+ *
+ * This xv-11 lidar driver started from a popular XV-11 or 'Neato' Lidar driver.
+ *
+ * https://github.com/ros2/demos/blob/master/dummy_robot/dummy_sensors/src/dummy_laser.cpp
+ * And xv11 code:  https://github.com/rohbotics/xv_11_laser_driver
+ * Also refer to conversion from ROS to ROS2  at https://index.ros.org/doc/ros2/Contributing/Migration-Guide/
+ *
+ * Launch:  ros2 run xv_11_driver xv_11_driver
+ *********************************************************************/
 
 #include <chrono>
 #include <iostream>
@@ -38,10 +62,12 @@
 #define DEG2RAD (M_PI/180.0)
 
 // default xv11 dev name.  Suggest you use symbolic link for an easier to ricognize name on your system
+// example:  sudo ln -s /dev/yourTtyDevName /dev/ttyXV11
 // Here I assume you have setup symbolic link to your actual serial port tty driver to the lidar
-#define XV11_PORT_DEFAULT "/dev/tty_xv11_driver"
-#define XV11_BAUD_RATE_DEFAULT 115200
-#define XV11_FRAME_ID_DEFAULT "neato_laser"
+#define XV11_PORT_DEFAULT "/dev/ttyXV11"           // Serial device driver name (sym link to real dev)
+#define XV11_BAUD_RATE_DEFAULT 115200              // Serial baud rate
+#define XV11_FRAME_ID_DEFAULT "neato_laser"        // frame_id in LaserScan messages
+#define XV11_FIRMWARE_VERSION_DEFAULT 2            // XV-11 firmware rev. 1 is oldest
 
 
 int main(int argc, char * argv[])
@@ -50,22 +76,27 @@ int main(int argc, char * argv[])
 
   auto node = rclcpp::Node::make_shared("xv11_laser");
 
-  int firmware_number = 2;
-
   node->declare_parameter("port");
   auto port_param      = rclcpp::Parameter("port", XV11_PORT_DEFAULT);
+
   node->declare_parameter("baud_rate");
   auto baud_rate_param = rclcpp::Parameter("baud_rate", XV11_BAUD_RATE_DEFAULT);
+
   node->declare_parameter("frame_id");
   auto frame_id_param  = rclcpp::Parameter("frame_id", XV11_FRAME_ID_DEFAULT);
+
+  node->declare_parameter("firmware_version");
+  auto firmware_param  = rclcpp::Parameter("firmware_version", XV11_FIRMWARE_VERSION_DEFAULT);
     
   node->get_parameter_or("port", port_param, port_param);
   node->get_parameter_or("baud_rate", baud_rate_param, baud_rate_param);
   node->get_parameter_or("frame_id", frame_id_param, frame_id_param);
+  node->get_parameter_or("firmware_version", firmware_param, firmware_param);
 
   std::string port     = port_param.value_to_string();
   int baud_rate        = baud_rate_param.as_int();
   std::string frame_id = frame_id_param.value_to_string();
+  int firmware_number  = firmware_param.as_int();
 
   auto laser_pub = node->create_publisher<sensor_msgs::msg::LaserScan>("scan", 10);
 

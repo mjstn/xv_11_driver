@@ -15,11 +15,12 @@ Place this repository in your colcon_ws workspace
 Once it has been made and registered by sourcing it to your environment 
 you may run it as follows
 
-The following ROS2 parameters are defaulted but should be able to be changed at runtime
+The following ROS2 parameters are defaulted as below and can be set using parameters
 
-    port        /dev/tty_xv11_driver
-    baud_rate   115200
-    frame_id    neato_laser
+    port              /dev/tty_xv11_driver
+    baud_rate         115200
+    frame_id          neato_laser
+    firmware_version  2
 
 Run the driver and it should generate scan data on topic /scan
 

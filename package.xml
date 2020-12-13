@@ -2,12 +2,20 @@
 <?xml-model href="http://download.ros.org/schema/package_format2.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
 <package format="2">
   <name>xv_11_driver</name>
-  <version>0.10.0</version>
+  <version>0.1.0</version>
   <description>XV-11 Lidar Driver node</description>
+
   <maintainer email="mjstn2011@gmail.com">Mark Johnston</maintainer>
-  <license>Apache License 2.0</license>
+
+  <license>BSD</license>
+
+  <!-- Author tags with many below the first from the original ROS driver  -->
   <author>Mark Johnston</author>
   <author email="mjstn2011@gmail.com">Mark Johnston</author>
+  <author>Eric Perko</author>
+  <author>Chad Rockey</author>
+  <author>Rohan Agrawal</author>
+  <author>Steve 'dillo' Okay</author>
 
   <buildtool_depend>ament_cmake</buildtool_depend>
 
