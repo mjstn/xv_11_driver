@@ -36,8 +36,8 @@
 
 namespace xv_11_driver {
 
-  XV11Laser::XV11Laser(const std::string& port, uint32_t baud_rate, uint32_t firmware, boost::asio::io_service& io): port_(port),
-  baud_rate_(baud_rate), firmware_(firmware), shutting_down_(false), serial_(io, port_) {
+  XV11Laser::XV11Laser(const std::string& port, uint32_t baud_rate, uint32_t firmware, boost::asio::io_service& io, double range_threshold): port_(port),
+  baud_rate_(baud_rate), firmware_(firmware), shutting_down_(false), serial_(io, port_), range_threshold_(range_threshold) {
     serial_.set_option(boost::asio::serial_port_base::baud_rate(baud_rate_));
   }
 
@@ -78,7 +78,7 @@ namespace xv_11_driver {
 	    scan->angle_max = 2.0*M_PI;
 	    scan->angle_increment = (2.0*M_PI/360.0);
 	    scan->time_increment = motor_speed_/1e8;
-	    scan->range_min = 0.06;
+	    scan->range_min = range_threshold_;
 	    scan->range_max = 5.0;
 	    scan->ranges.reserve(360);
 	    scan->intensities.reserve(360);
@@ -96,8 +96,14 @@ namespace xv_11_driver {
 	      uint16_t range = ((byte1 & 0x3F)<< 8) + byte0;
 	      // Last two bytes represent the uncertanty or intensity, might also be pixel area of target...
 	      uint16_t intensity = (byte3 << 8) + byte2;
-
-	      scan->ranges.push_back(range / 1000.0);
+		  
+		  double range_i = range / 1000.0;
+		  if(range_i < range_threshold_){
+	      	scan->ranges.push_back(std::numeric_limits<float>::quiet_NaN());
+		  }
+		  else{ 
+	      	scan->ranges.push_back(range_i);
+		  }
 	      scan->intensities.push_back(intensity);
 	    }
 	  }
@@ -128,7 +134,7 @@ namespace xv_11_driver {
 	    scan->angle_min = 0.0;
 	    scan->angle_max = 2.0*M_PI;
 	    scan->angle_increment = (2.0*M_PI/360.0);
-	    scan->range_min = 0.06;
+	    scan->range_min = range_threshold_;
 	    scan->range_max = 5.0;
 	    scan->ranges.resize(360);
 	    scan->intensities.resize(360);
@@ -154,8 +160,14 @@ namespace xv_11_driver {
 		  uint16_t range = ((byte1 & 0x3F)<< 8) + byte0;
 		  // Last two bytes represent the uncertanty or intensity, might also be pixel area of target...
 		  uint16_t intensity = (byte3 << 8) + byte2;
-
-		  scan->ranges[index] = range / 1000.0;
+		  
+		  double range_i = range / 1000.0;
+		  if(range_i < range_threshold_){
+	      	scan->ranges[index] = std::numeric_limits<float>::quiet_NaN();
+		  }
+		  else{ 
+	      	scan->ranges[index] = range_i;
+		  }
 		  scan->intensities[index] = intensity;
 		}
 	      }

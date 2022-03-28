@@ -68,6 +68,7 @@
 #define XV11_BAUD_RATE_DEFAULT 115200              // Serial baud rate
 #define XV11_FRAME_ID_DEFAULT "neato_laser"        // frame_id in LaserScan messages
 #define XV11_FIRMWARE_VERSION_DEFAULT 2            // XV-11 firmware rev. 1 is oldest
+#define XV11_RANGE_THRESHOLD 0.06            // XV-11 firmware rev. 1 is oldest
 
 
 int main(int argc, char * argv[])
@@ -88,15 +89,20 @@ int main(int argc, char * argv[])
   node->declare_parameter("firmware_version");
   auto firmware_param  = rclcpp::Parameter("firmware_version", XV11_FIRMWARE_VERSION_DEFAULT);
     
+  node->declare_parameter("range_threshold");
+  auto range_threshold_param  = rclcpp::Parameter("range_threshold", XV11_RANGE_THRESHOLD);
+
   node->get_parameter_or("port", port_param, port_param);
   node->get_parameter_or("baud_rate", baud_rate_param, baud_rate_param);
   node->get_parameter_or("frame_id", frame_id_param, frame_id_param);
   node->get_parameter_or("firmware_version", firmware_param, firmware_param);
+  node->get_parameter_or("range_threshold", range_threshold_param, range_threshold_param);
 
   std::string port     = port_param.value_to_string();
   int baud_rate        = baud_rate_param.as_int();
   std::string frame_id = frame_id_param.value_to_string();
   int firmware_number  = firmware_param.as_int();
+  double range_threshold  = range_threshold_param.as_double();
 
   auto laser_pub = node->create_publisher<sensor_msgs::msg::LaserScan>("scan", 10);
 
@@ -104,7 +110,7 @@ int main(int argc, char * argv[])
   boost::asio::io_service io;
 
   try {
-    xv_11_driver::XV11Laser laser(port, baud_rate, firmware_number, io);
+    xv_11_driver::XV11Laser laser(port, baud_rate, firmware_number, io, range_threshold);
 
     // auto motor_pub = node->create_publisher<std_msgs::UInt16>("rpms",1000);
 
