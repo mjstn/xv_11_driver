@@ -57,6 +57,7 @@
 #include "../include/xv_11_driver/xv11_laser.h"
 
 #include <std_msgs/msg/string.hpp>
+#include <std_msgs/msg/uint16.hpp>
 #include <sensor_msgs/msg/laser_scan.hpp>
 
 #define DEG2RAD (M_PI/180.0)
@@ -100,13 +101,13 @@ int main(int argc, char * argv[])
 
   auto laser_pub = node->create_publisher<sensor_msgs::msg::LaserScan>("scan", 10);
 
-  std_msgs::std::uint16_t rpms;
+  std_msgs::uint16_t rpms;
   boost::asio::io_service io;
 
   try {
     xv_11_driver::XV11Laser laser(port, baud_rate, firmware_number, io);
 
-  auto motor_pub = node->create_publisher<std_msgs::std::uint16_t>("rpms",1000);
+  auto motor_pub = node->create_publisher<std_msgs::uint16_t>("rpms",1000);
 
     while (rclcpp::ok()) {
       sensor_msgs::msg::LaserScan *scan;
