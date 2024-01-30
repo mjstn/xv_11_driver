@@ -76,7 +76,7 @@ int main(int argc, char * argv[])
 
   auto node = rclcpp::Node::make_shared("xv11_laser");
 
-  node->declare_parameter("port");
+  node->declare_parameter("port", rclcpp::ParameterValue{});
   auto port_param      = rclcpp::Parameter("port", XV11_PORT_DEFAULT);
 
   node->declare_parameter("baud_rate");
