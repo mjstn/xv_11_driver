@@ -100,13 +100,13 @@ int main(int argc, char * argv[])
 
   auto laser_pub = node->create_publisher<sensor_msgs::msg::LaserScan>("scan", 10);
 
-  std_msgs::msg::UInt16 rpms;
+  std_msgs::std::uint16_t rpms;
   boost::asio::io_service io;
 
   try {
     xv_11_driver::XV11Laser laser(port, baud_rate, firmware_number, io);
 
-  auto motor_pub = node->create_publisher<std_msgs::msg::UInt16>("rpms",1000);
+  auto motor_pub = node->create_publisher<std_msgs::std::uint16_t>("rpms",1000);
 
     while (rclcpp::ok()) {
       sensor_msgs::msg::LaserScan *scan;
