@@ -76,16 +76,16 @@ int main(int argc, char * argv[])
 
   auto node = rclcpp::Node::make_shared("xv11_laser");
 
-  node->declare_parameter("port", rclcpp::PARAMETER_STRING{});
+  node->declare_parameter("port", rclcpp::PARAMETER_STRING);
   auto port_param      = rclcpp::Parameter("port", XV11_PORT_DEFAULT);
 
-  node->declare_parameter("baud_rate", rclcpp::PARAMETER_STRING{});
+  node->declare_parameter("baud_rate", rclcpp::PARAMETER_STRING);
   auto baud_rate_param = rclcpp::Parameter("baud_rate", XV11_BAUD_RATE_DEFAULT);
 
-  node->declare_parameter("frame_id", rclcpp::PARAMETER_STRING{});
+  node->declare_parameter("frame_id", rclcpp::PARAMETER_STRING);
   auto frame_id_param  = rclcpp::Parameter("frame_id", XV11_FRAME_ID_DEFAULT);
 
-  node->declare_parameter("firmware_version", rclcpp::PARAMETER_STRING{});
+  node->declare_parameter("firmware_version", rclcpp::PARAMETER_STRING);
   auto firmware_param  = rclcpp::Parameter("firmware_version", XV11_FIRMWARE_VERSION_DEFAULT);
     
   node->get_parameter_or("port", port_param, port_param);
