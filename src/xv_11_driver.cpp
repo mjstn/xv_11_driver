@@ -106,7 +106,7 @@ int main(int argc, char * argv[])
   try {
     xv_11_driver::XV11Laser laser(port, baud_rate, firmware_number, io);
 
-    auto motor_pub = node->create_publisher<std_msgs::UInt16>("rpms",1000);
+  auto motor_pub = node->create_publisher<std_msgs::msg::UInt16>("rpms",1000);
 
     while (rclcpp::ok()) {
       sensor_msgs::msg::LaserScan *scan;
