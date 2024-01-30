@@ -79,13 +79,13 @@ int main(int argc, char * argv[])
   node->declare_parameter("port", rclcpp::ParameterValue{});
   auto port_param      = rclcpp::Parameter("port", XV11_PORT_DEFAULT);
 
-  node->declare_parameter("baud_rate");
+  node->declare_parameter("baud_rate", rclcpp::ParameterValue{});
   auto baud_rate_param = rclcpp::Parameter("baud_rate", XV11_BAUD_RATE_DEFAULT);
 
-  node->declare_parameter("frame_id");
+  node->declare_parameter("frame_id", rclcpp::ParameterValue{});
   auto frame_id_param  = rclcpp::Parameter("frame_id", XV11_FRAME_ID_DEFAULT);
 
-  node->declare_parameter("firmware_version");
+  node->declare_parameter("firmware_version", rclcpp::ParameterValue{});
   auto firmware_param  = rclcpp::Parameter("firmware_version", XV11_FIRMWARE_VERSION_DEFAULT);
     
   node->get_parameter_or("port", port_param, port_param);
