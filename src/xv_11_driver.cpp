@@ -57,7 +57,7 @@
 #include "../include/xv_11_driver/xv11_laser.h"
 
 #include <std_msgs/msg/string.hpp>
-#include <std_msgs/msg/uint16.hpp>
+#include <std_msgs/msg/uint16.h>
 #include <sensor_msgs/msg/laser_scan.hpp>
 
 #define DEG2RAD (M_PI/180.0)
