@@ -57,6 +57,7 @@
 #include "../include/xv_11_driver/xv11_laser.h"
 
 #include <std_msgs/msg/string.hpp>
+#include <std_msgs/msg/u_int16.hpp>
 #include <sensor_msgs/msg/laser_scan.hpp>
 
 #define DEG2RAD (M_PI/180.0)
@@ -76,16 +77,16 @@ int main(int argc, char * argv[])
 
   auto node = rclcpp::Node::make_shared("xv11_laser");
 
-  node->declare_parameter("port");
+  node->declare_parameter("port", rclcpp::PARAMETER_STRING);
   auto port_param      = rclcpp::Parameter("port", XV11_PORT_DEFAULT);
 
-  node->declare_parameter("baud_rate");
+  node->declare_parameter("baud_rate", rclcpp::PARAMETER_STRING);
   auto baud_rate_param = rclcpp::Parameter("baud_rate", XV11_BAUD_RATE_DEFAULT);
 
-  node->declare_parameter("frame_id");
+  node->declare_parameter("frame_id", rclcpp::PARAMETER_STRING);
   auto frame_id_param  = rclcpp::Parameter("frame_id", XV11_FRAME_ID_DEFAULT);
 
-  node->declare_parameter("firmware_version");
+  node->declare_parameter("firmware_version", rclcpp::PARAMETER_STRING);
   auto firmware_param  = rclcpp::Parameter("firmware_version", XV11_FIRMWARE_VERSION_DEFAULT);
     
   node->get_parameter_or("port", port_param, port_param);
@@ -100,13 +101,13 @@ int main(int argc, char * argv[])
 
   auto laser_pub = node->create_publisher<sensor_msgs::msg::LaserScan>("scan", 10);
 
-  // std_msgs::msg::UInt16 rpms;
+  std_msgs::msg::UInt16 rpms;
   boost::asio::io_service io;
 
   try {
     xv_11_driver::XV11Laser laser(port, baud_rate, firmware_number, io);
 
-    // auto motor_pub = node->create_publisher<std_msgs::UInt16>("rpms",1000);
+  auto motor_pub = node->create_publisher<std_msgs::msg::UInt16>("rpms",1000);
 
     while (rclcpp::ok()) {
       sensor_msgs::msg::LaserScan *scan;
@@ -117,8 +118,8 @@ int main(int argc, char * argv[])
       laser.poll(scan);
       laser_pub->publish(*scan);
 
-      //rpms.data=laser.rpms;
-      // motor_pub->publish(rpms);
+      rpms.data=laser.rpms;
+      motor_pub->publish(rpms);
 
     }
     laser.close();
