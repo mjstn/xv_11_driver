@@ -8,6 +8,8 @@ Please see ROS version here:  https://github.com/rohbotics/xv_11_laser_driver
 ## Changes in this fork
 Fork of https://github.com/mjstn/xv_11_driver, modified by Michael Moser:
 - Parameters are declared with their defaults, the overload without a default no longer exists on ROS 2 kilted.
+- `scan_time` and `time_increment` are computed from the motor speed (firmware 2); before, `scan_time` was 0 and `time_increment` about 2.7x too small.
+- `header.stamp` is derived from the time the last ray arrived instead of the time before reading started. New parameter `stamp_mid_scan` (default `false`): `true` stamps the middle of the rotation instead of the first ray, for consumers that place a whole scan at its stamp (e.g. slam_toolbox). With a scan taking ~0.2 s, the first-ray stamp makes such consumers misplace scans while the robot turns.
 
 Place this repository in your colcon_ws workspace
 
@@ -25,6 +27,7 @@ The following ROS2 parameters are defaulted as below and can be set using parame
     baud_rate         115200
     frame_id          neato_laser
     firmware_version  2
+    stamp_mid_scan    false
 
 Run the driver and it should generate scan data on topic /scan
 

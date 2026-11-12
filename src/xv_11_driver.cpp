@@ -45,6 +45,7 @@
  *
  * Modified 2026 by Michael Moser (fork github.com/michmos/xv_11_driver):
  *  - parameters declared with their defaults (builds on ROS 2 kilted)
+ *  - scan stamped from the end of the rotation; stamp_mid_scan parameter
  *********************************************************************/
 
 #include <chrono>
@@ -101,6 +102,11 @@ int main(int argc, char * argv[])
   std::string frame_id = frame_id_param.value_to_string();
   int firmware_number  = firmware_param.as_int();
 
+  // header.stamp is the time of the first ray (LaserScan convention). true stamps
+  // the middle of the rotation instead, which suits consumers that place the whole
+  // scan at its stamp without using time_increment (e.g. slam_toolbox).
+  const bool stamp_mid_scan = node->declare_parameter("stamp_mid_scan", false);
+
   auto laser_pub = node->create_publisher<sensor_msgs::msg::LaserScan>("scan", 10);
 
   // std_msgs::msg::UInt16 rpms;
@@ -116,8 +122,16 @@ int main(int argc, char * argv[])
       scan = new sensor_msgs::msg::LaserScan;
       // sensor_msgs::LaserScan::Ptr scan(new sensor_msgs::LaserScan);
       scan->header.frame_id = frame_id;
-      scan->header.stamp = rclcpp::Clock().now();   //  ROS was  Time::now();
+      const rclcpp::Time poll_start = rclcpp::Clock().now();
       laser.poll(scan);
+      if (scan->scan_time > 0.0f) {
+        // poll() returns right after the last ray of the rotation arrived
+        const double age = stamp_mid_scan ? scan->scan_time / 2.0
+                                          : scan->scan_time - scan->time_increment;
+        scan->header.stamp = rclcpp::Clock().now() - rclcpp::Duration::from_seconds(age);
+      } else {
+        scan->header.stamp = poll_start;
+      }
       laser_pub->publish(*scan);
 
       //rpms.data=laser.rpms;

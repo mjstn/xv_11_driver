@@ -30,6 +30,9 @@
  *  LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
+ *
+ *  Modified 2026 by Michael Moser (fork github.com/michmos/xv_11_driver):
+ *   - scan_time and time_increment from the motor speed (firmware 2)
  *********************************************************************/
 
 #include "../include/xv_11_driver/xv11_laser.h"
@@ -161,7 +164,11 @@ namespace xv_11_driver {
 	      }
 	    }
 
-	    scan->time_increment = motor_speed/good_sets/1e8;
+	    // the speed field is in rpm * 64
+	    if(good_sets > 0 && motor_speed > 0) {
+	      scan->scan_time = 60.0 * 64.0 * good_sets / motor_speed;
+	      scan->time_increment = scan->scan_time / 360.0;
+	    }
 	  }
 	}
       }
