@@ -42,6 +42,9 @@
  * Also refer to conversion from ROS to ROS2  at https://index.ros.org/doc/ros2/Contributing/Migration-Guide/
  *
  * Launch:  ros2 run xv_11_driver xv_11_driver
+ *
+ * Modified 2026 by Michael Moser (fork github.com/michmos/xv_11_driver):
+ *  - parameters declared with their defaults (builds on ROS 2 kilted)
  *********************************************************************/
 
 #include <chrono>
@@ -76,16 +79,16 @@ int main(int argc, char * argv[])
 
   auto node = rclcpp::Node::make_shared("xv11_laser");
 
-  node->declare_parameter("port");
+  node->declare_parameter("port", XV11_PORT_DEFAULT);
   auto port_param      = rclcpp::Parameter("port", XV11_PORT_DEFAULT);
 
-  node->declare_parameter("baud_rate");
+  node->declare_parameter("baud_rate", XV11_BAUD_RATE_DEFAULT);
   auto baud_rate_param = rclcpp::Parameter("baud_rate", XV11_BAUD_RATE_DEFAULT);
 
-  node->declare_parameter("frame_id");
+  node->declare_parameter("frame_id", XV11_FRAME_ID_DEFAULT);
   auto frame_id_param  = rclcpp::Parameter("frame_id", XV11_FRAME_ID_DEFAULT);
 
-  node->declare_parameter("firmware_version");
+  node->declare_parameter("firmware_version", XV11_FIRMWARE_VERSION_DEFAULT);
   auto firmware_param  = rclcpp::Parameter("firmware_version", XV11_FIRMWARE_VERSION_DEFAULT);
     
   node->get_parameter_or("port", port_param, port_param);

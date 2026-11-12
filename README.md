@@ -5,6 +5,10 @@ This is a port of the popular ROS driver called  xv_11_laser_driver
 This is a port so most credit goes to original developers.
 Please see ROS version here:  https://github.com/rohbotics/xv_11_laser_driver
 
+## Changes in this fork
+Fork of https://github.com/mjstn/xv_11_driver, modified by Michael Moser:
+- Parameters are declared with their defaults, the overload without a default no longer exists on ROS 2 kilted.
+
 Place this repository in your colcon_ws workspace
 
     cd ~/colcon_ws/src
